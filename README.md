@@ -1,0 +1,2 @@
+# Heart-Disease-Prediction-using-Deep-Neural-Network-
+Heart Disease Prediction Using Deep Neural Network is a healthcare AI project that predicts heart disease using medical parameters like age, cholesterol, blood pressure,and heart rate. Built with Python, TensorFlow, and the UCI Heart Disease Dataset, the model uses deep learning techniques to improve prediction accuracy and support early diagnosis.
