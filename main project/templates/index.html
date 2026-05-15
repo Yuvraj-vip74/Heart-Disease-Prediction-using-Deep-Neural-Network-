@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HeartNet AI</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f4f4f4;
+        }
+
+        .navbar {
+            background: #111;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-btn {
+            cursor: pointer;
+        }
+
+        .section {
+            display: none;
+            padding: 30px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 10px auto;
+            width: 60%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px;
+            background: black;
+            color: white;
+            border: none;
+            width: 100%;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #e8ffe8;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="nav-btn" onclick="showTab('home')">Home</div>
+    <div class="nav-btn" onclick="showTab('predict')">Predict</div>
+    <div class="nav-btn" onclick="showTab('stats')">Model Stats</div>
+    <div class="nav-btn" onclick="showTab('about')">About</div>
+</div>
+
+<!-- HOME -->
+<div id="home" class="section active">
+    <h1>HeartNet AI</h1>
+    <div class="card">
+        <p>AI-based Heart Disease Prediction System</p>
+        <p><b>Accuracy:</b> {{ test_accuracy }}%</p>
+    </div>
+</div>
+
+<!-- PREDICT -->
+<div id="predict" class="section">
+    <h1>Predict Heart Disease</h1>
+
+    <div class="card">
+        <input type="number" id="age" placeholder="Age">
+        
+        <select id="sex">
+            <option>Male</option>
+            <option>Female</option>
+        </select>
+
+        <input type="number" id="trestbps" placeholder="Resting BP">
+        <input type="number" id="chol" placeholder="Cholesterol">
+
+        <select id="fbs">
+            <option value="1">High Sugar</option>
+            <option value="0">Normal Sugar</option>
+        </select>
+
+        <input type="number" id="thalch" placeholder="Max Heart Rate">
+
+        <select id="exang">
+            <option value="1">Exercise Pain Yes</option>
+            <option value="0">No</option>
+        </select>
+
+        <input type="number" id="oldpeak" placeholder="Oldpeak">
+
+        <select id="cp">
+            <option>typical angina</option>
+            <option>atypical angina</option>
+            <option>non-anginal</option>
+            <option>asymptomatic</option>
+        </select>
+
+        <select id="restecg">
+            <option>normal</option>
+            <option>lv hypertrophy</option>
+            <option>st-t abnormality</option>
+        </select>
+
+        <button onclick="predict()">Predict</button>
+
+        <div class="result" id="result">
+            <h3 id="label"></h3>
+            <p>Disease Probability: <span id="disease"></span>%</p>
+            <p>No Disease: <span id="nodisease"></span>%</p>
+            <p>Risk Level: <span id="risk"></span></p>
+        </div>
+    </div>
+</div>
+
+<!-- STATS -->
+<div id="stats" class="section">
+    <h1>Model Statistics</h1>
+    <div class="card">
+        <p><b>Test Accuracy:</b> {{ test_accuracy }}%</p>
+        <p><b>Model:</b> Deep Neural Network</p>
+        <p><b>Optimizer:</b> Adam</p>
+        <p><b>Dataset:</b> UCI Heart Disease</p>
+    </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="section">
+    <h1>About Project</h1>
+    <div class="card">
+        <p>This project predicts heart disease using Deep Neural Networks.</p>
+        <p>Built using Python, PyTorch, Flask.</p>
+    </div>
+</div>
+
+<script>
+function showTab(tab) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+}
+
+function predict() {
+    const data = new URLSearchParams({
+        age: document.getElementById('age').value,
+        sex: document.getElementById('sex').value,
+        trestbps: document.getElementById('trestbps').value,
+        chol: document.getElementById('chol').value,
+        fbs: document.getElementById('fbs').value,
+        thalch: document.getElementById('thalch').value,
+        exang: document.getElementById('exang').value,
+        oldpeak: document.getElementById('oldpeak').value,
+        cp: document.getElementById('cp').value,
+        restecg: document.getElementById('restecg').value
+    });
+
+    fetch('/predict', {
+        method: 'POST',
+        body: data
+    })
+    .then(res => res.json())
+    .then(d => {
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('label').innerText = d.label;
+        document.getElementById('disease').innerText = d.disease_pct;
+        document.getElementById('nodisease').innerText = d.no_disease_pct;
+        document.getElementById('risk').innerText = d.risk_level;
+    });
+}
+</script>
+
+</body>
+</html>
